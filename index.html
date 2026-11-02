@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>盤上の物語</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&family=BIZ+UDPMincho&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<style>
+/* Layout: one narrow reading column, like a single kifu sheet; a 9x9 board mark heads the page */
+:root {
+  --paper: #f2f3ef;
+  --sheet: #fbfbf8;
+  --ink: #1d2638;
+  --ink-soft: #5b6475;
+  --rule: #d5d8d2;
+  --kaya: #a87b22;
+  --font-display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-ui: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11151d; --sheet: #181d27; --ink: #e7e5de; --ink-soft: #a3a8b3; --rule: #2c3240; --kaya: #d8b05a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11151d; --sheet: #181d27; --ink: #e7e5de; --ink-soft: #a3a8b3; --rule: #2c3240; --kaya: #d8b05a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 48px;
+}
+.sheet {
+  max-width: 34rem;
+  margin-inline: auto;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  padding: clamp(24px, 6vw, 44px) clamp(20px, 6vw, 44px);
+  display: grid;
+  gap: 28px;
+}
+.head { display: grid; justify-items: center; gap: 14px; text-align: center; }
+.board { width: 54px; height: 54px; color: var(--kaya); }
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--ink-soft);
+  margin: 0;
+}
+h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 5.6vw, 1.9rem);
+  line-height: 1.5;
+  margin: 0;
+  text-wrap: balance;
+}
+.story { display: grid; gap: 1.1em; border-top: 1px solid var(--rule); padding-top: 28px; }
+.story p {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 2.05;
+  letter-spacing: 0.04em;
+  text-indent: 1em;
+  overflow-wrap: anywhere;
+}
+.foot {
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+  display: grid;
+  gap: 14px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+.foot p { margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--ink);
+  padding: 10px 18px;
+  cursor: pointer;
+}
+button:hover { background: var(--ink); color: var(--sheet); }
+button:focus-visible { outline: 2px solid var(--kaya); outline-offset: 3px; }
+.status { min-height: 1.4em; }
+.notice { text-align: center; display: grid; gap: 12px; }
+.notice h1 { font-size: 1.3rem; }
+.notice p { margin: 0; font-family: var(--font-ui); font-size: 0.9375rem; line-height: 1.9; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<main class="sheet" aria-live="polite">
+  <header class="head">
+    <svg class="board" viewBox="-2 -2 94 94" aria-hidden="true">
+      <path fill="none" stroke="currentColor" stroke-width="1.2" d="M0 0H90M0 10H90M0 20H90M0 30H90M0 40H90M0 50H90M0 60H90M0 70H90M0 80H90M0 90H90M0 0V90M10 0V90M20 0V90M30 0V90M40 0V90M50 0V90M60 0V90M70 0V90M80 0V90M90 0V90"/>
+      <circle cx="30" cy="30" r="2.4" fill="currentColor"/><circle cx="60" cy="30" r="2.4" fill="currentColor"/>
+      <circle cx="30" cy="60" r="2.4" fill="currentColor"/><circle cx="60" cy="60" r="2.4" fill="currentColor"/>
+    </svg>
+    <p class="eyebrow">棋譜がつむいだ　あなたの物語</p>
+    <h1 id="title">物語を読み込んでいます</h1>
+  </header>
+
+  <section class="story" id="story" hidden></section>
+
+  <footer class="foot" id="foot" hidden>
+    <p>この物語はどこのサーバーにも保存されていません。いま開いているこのページのアドレスの中にだけ入っています。残しておきたいときは、スクリーンショットを撮るか、このページをブックマークしてください。</p>
+    <div class="actions">
+      <button type="button" id="copy">物語をコピー</button>
+      <span class="status" id="status" role="status"></span>
+    </div>
+  </footer>
+
+  <section class="notice" id="notice" hidden>
+    <p id="noticeText"></p>
+  </section>
+</main>
+
+<script>
+(() => {
+  // URLの「#」以降: 先頭1文字が形式の版番号、残りが base64url(deflate-raw(UTF-8のJSON))
+  // JSON: { "v": 1, "t": "タイトル", "s": "物語本文" }
+  const MAX_TITLE = 80, MAX_STORY = 3000;
+  const $ = (id) => document.getElementById(id);
+
+  const showError = (message) => {
+    $('title').textContent = '物語を表示できませんでした';
+    $('noticeText').textContent = message;
+    $('notice').hidden = false;
+    $('story').hidden = true;
+    $('foot').hidden = true;
+  };
+
+  const fromBase64Url = (text) => {
+    const b64 = text.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((text.length + 3) % 4);
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  };
+
+  const inflate = async (bytes) => {
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return await new Response(stream).text();
+  };
+
+  const render = (data) => {
+    // 受け取った文字列は必ず textContent で入れる（URLは誰でも書き換えられるため）
+    $('title').textContent = data.t;
+    const story = $('story');
+    story.replaceChildren();
+    data.s.split(/\n+/).map((line) => line.trim()).filter(Boolean).forEach((line) => {
+      const p = document.createElement('p');
+      p.textContent = line;
+      story.append(p);
+    });
+    story.hidden = false;
+    $('foot').hidden = false;
+    $('notice').hidden = true;
+    document.title = data.t + '｜盤上の物語';
+  };
+
+  const load = async () => {
+    const raw = location.hash.replace(/^#/, '');
+    if (!raw) {
+      showError('物語のデータが見つかりません。会場のiPadに表示されたQRコードを、もう一度スマートフォンで読み取ってください。');
+      return;
+    }
+    if (typeof DecompressionStream === 'undefined') {
+      showError('お使いのブラウザでは表示できません。ブラウザを最新版に更新してから、もう一度QRコードを読み取ってください。');
+      return;
+    }
+    try {
+      if (raw[0] !== '1') throw new Error('unknown version');
+      const data = JSON.parse(await inflate(fromBase64Url(raw.slice(1))));
+      if (typeof data.t !== 'string' || typeof data.s !== 'string') throw new Error('bad shape');
+      if (data.t.length > MAX_TITLE || data.s.length > MAX_STORY) throw new Error('too long');
+      render(data);
+    } catch (e) {
+      showError('QRコードの読み取りが途中で切れた可能性があります。会場のiPadに表示されたQRコードを、もう一度読み取ってください。');
+    }
+  };
+
+  $('copy').addEventListener('click', async () => {
+    const text = $('title').textContent + '\n\n' + [...$('story').querySelectorAll('p')].map((p) => p.textContent).join('\n');
+    try {
+      await navigator.clipboard.writeText(text);
+      $('status').textContent = 'コピーしました';
+    } catch (e) {
+      const range = document.createRange();
+      range.selectNodeContents($('story'));
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      $('status').textContent = '本文を選択しました。長押しでコピーできます';
+    }
+  });
+
+  window.addEventListener('hashchange', load);
+  load();
+})();
+</script>
+</body>
+</html>
