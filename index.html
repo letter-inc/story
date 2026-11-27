@@ -3,136 +3,184 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>盤上の物語</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#f6d600">
+<title>こども将棋ものがたり</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700&family=BIZ+UDPMincho&family=BIZ+UDPGothic:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800;900&display=swap">
 <style>
-/* Layout: one narrow reading column, like a single kifu sheet; a 9x9 board mark heads the page */
+/* Layout: the booth poster in phone form — key visual and outlined catch line on flat yellow, the story on a cream panel below */
 :root {
-  --paper: #f2f3ef;
-  --sheet: #fbfbf8;
-  --ink: #1d2638;
-  --ink-soft: #5b6475;
-  --rule: #d5d8d2;
-  --kaya: #a87b22;
-  --font-display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
-  --font-body: "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", serif;
-  --font-ui: "BIZ UDPGothic", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #11151d; --sheet: #181d27; --ink: #e7e5de; --ink-soft: #a3a8b3; --rule: #2c3240; --kaya: #d8b05a;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #11151d; --sheet: #181d27; --ink: #e7e5de; --ink-soft: #a3a8b3; --rule: #2c3240; --kaya: #d8b05a;
-  color-scheme: dark;
+  --yellow: #f6d600;
+  --cream: #f6faed;
+  --ink: #231815;
+  --red: #d14237;
+  --blue: #118fc4;
+  --marker: #e4d01c;
+  --white: #ffffff;
+  --font: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
+html { background: var(--yellow); }
 body {
-  background: var(--paper);
+  margin: 0;
+  min-height: 100vh;
+  background: var(--yellow);
   color: var(--ink);
-  font-family: var(--font-body);
+  font-family: var(--font);
+  font-weight: 500;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 32px 48px;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: max(32px, env(safe-area-inset-bottom, 0px));
+  -webkit-text-size-adjust: 100%;
 }
-.sheet {
+.hero { max-width: 36rem; margin: 0 auto; padding-top: 14px; }
+.kv { display: block; width: 100%; height: auto; }
+
+/* ポスターと同じ、黒フチ文字のキャッチ */
+.catch {
+  margin: 6px auto 18px;
+  text-align: center;
+  font-weight: 900;
+  font-size: clamp(1.45rem, 7.4vw, 2.1rem);
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  --o: 0.09em;
+  text-shadow:
+    var(--o) 0 0 var(--ink), calc(var(--o) * -1) 0 0 var(--ink), 0 var(--o) 0 var(--ink), 0 calc(var(--o) * -1) 0 var(--ink),
+    calc(var(--o) * .7) calc(var(--o) * .7) 0 var(--ink), calc(var(--o) * -.7) calc(var(--o) * .7) 0 var(--ink),
+    calc(var(--o) * .7) calc(var(--o) * -.7) 0 var(--ink), calc(var(--o) * -.7) calc(var(--o) * -.7) 0 var(--ink),
+    calc(var(--o) * 1.6) calc(var(--o) * 1.6) 0 var(--ink);
+  transform: rotate(-2deg);
+}
+.catch .red { color: var(--red); }
+
+.panel {
   max-width: 34rem;
-  margin-inline: auto;
-  background: var(--sheet);
-  border: 1px solid var(--rule);
-  padding: clamp(24px, 6vw, 44px) clamp(20px, 6vw, 44px);
+  margin: 0 auto;
+  background: var(--cream);
+  border-radius: 32px;
+  padding: 30px clamp(20px, 6vw, 34px) 32px;
   display: grid;
-  gap: 28px;
+  gap: 24px;
 }
-.head { display: grid; justify-items: center; gap: 14px; text-align: center; }
-.board { width: 54px; height: 54px; color: var(--kaya); }
-.eyebrow {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  letter-spacing: 0.3em;
-  color: var(--ink-soft);
+.head { display: grid; justify-items: start; gap: 12px; }
+.pill {
+  display: inline-block;
   margin: 0;
+  font-weight: 800;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  background: var(--red);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 3px 14px 4px;
 }
 h1 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.45rem, 5.6vw, 1.9rem);
-  line-height: 1.5;
   margin: 0;
-  text-wrap: balance;
+  font-weight: 900;
+  font-size: clamp(1.5rem, 6.6vw, 2rem);
+  line-height: 1.45;
+  color: var(--blue);
+  overflow-wrap: anywhere;
 }
-.story { display: grid; gap: 1.1em; border-top: 1px solid var(--rule); padding-top: 28px; }
+/* 蛍光ペンのような黄色いマーカー（改行しても各行に引かれる） */
+h1 span {
+  background: linear-gradient(transparent 58%, var(--marker) 58%, var(--marker) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 0 0.1em;
+}
+.story { display: grid; gap: 1.1em; }
 .story p {
   margin: 0;
   font-size: 1.0625rem;
   line-height: 2.05;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   text-indent: 1em;
   overflow-wrap: anywhere;
 }
-.foot {
-  border-top: 1px solid var(--rule);
-  padding-top: 20px;
+.notice p { margin: 0; font-size: 1rem; line-height: 1.9; }
+
+/* 黒いラベル付きの枠（ポスターの「体験時間」と同じ形） */
+.box {
+  position: relative;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  padding: 24px 18px 18px;
+  margin-top: 10px;
   display: grid;
   gap: 14px;
-  font-family: var(--font-ui);
-  font-size: 0.8125rem;
-  line-height: 1.8;
-  color: var(--ink-soft);
 }
-.foot p { margin: 0; }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-button {
-  font-family: var(--font-ui);
+.tab {
+  position: absolute;
+  top: -0.95em;
+  left: 14px;
+  margin: 0;
+  font-weight: 800;
   font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--ink);
-  background: transparent;
-  border: 1px solid var(--ink);
-  padding: 10px 18px;
-  cursor: pointer;
+  color: var(--white);
+  background: var(--ink);
+  border-radius: 999px;
+  padding: 2px 14px 3px;
 }
-button:hover { background: var(--ink); color: var(--sheet); }
-button:focus-visible { outline: 2px solid var(--kaya); outline-offset: 3px; }
-.status { min-height: 1.4em; }
-.notice { text-align: center; display: grid; gap: 12px; }
-.notice h1 { font-size: 1.3rem; }
-.notice p { margin: 0; font-family: var(--font-ui); font-size: 0.9375rem; line-height: 1.9; color: var(--ink-soft); }
+.box p { margin: 0; font-size: 0.9375rem; line-height: 1.85; }
+.box strong { color: var(--red); font-weight: 800; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+button {
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--white);
+  background: var(--red);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  padding: 11px 24px 12px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+button:active { filter: brightness(0.92); }
+button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.status { font-size: 0.875rem; font-weight: 800; min-height: 1.4em; }
+.small { text-align: center; font-size: 0.75rem; font-weight: 800; margin: 18px 0 0; }
 </style>
 </head>
 <body>
+<header class="hero">
+  <img class="kv" src="keyvisual.png" width="1200" height="600" alt="こども将棋ものがたり">
+</header>
 
-<main class="sheet" aria-live="polite">
-  <header class="head">
-    <svg class="board" viewBox="-2 -2 94 94" aria-hidden="true">
-      <path fill="none" stroke="currentColor" stroke-width="1.2" d="M0 0H90M0 10H90M0 20H90M0 30H90M0 40H90M0 50H90M0 60H90M0 70H90M0 80H90M0 90H90M0 0V90M10 0V90M20 0V90M30 0V90M40 0V90M50 0V90M60 0V90M70 0V90M80 0V90M90 0V90"/>
-      <circle cx="30" cy="30" r="2.4" fill="currentColor"/><circle cx="60" cy="30" r="2.4" fill="currentColor"/>
-      <circle cx="30" cy="60" r="2.4" fill="currentColor"/><circle cx="60" cy="60" r="2.4" fill="currentColor"/>
-    </svg>
-    <p class="eyebrow">棋譜がつむいだ　あなたの物語</p>
-    <h1 id="title">物語を読み込んでいます</h1>
-  </header>
+<p class="catch" aria-hidden="true">あなたの棋譜が<span class="red">物語</span>に！</p>
+
+<main class="panel" aria-live="polite">
+  <div class="head">
+    <p class="pill" id="pill">あなただけの小さな物語</p>
+    <h1><span id="title">物語を読み込んでいます</span></h1>
+  </div>
 
   <section class="story" id="story" hidden></section>
+  <section class="notice" id="notice" hidden>
+    <p id="noticeText"></p>
+  </section>
 
-  <footer class="foot" id="foot" hidden>
-    <p>この物語はどこのサーバーにも保存されていません。いま開いているこのページのアドレスの中にだけ入っています。残しておきたいときは、スクリーンショットを撮るか、このページをブックマークしてください。</p>
+  <section class="box" id="foot" hidden>
+    <p class="tab">物語をとっておくには</p>
+    <p>この物語は<strong>どこにも保存されていません</strong>。このページのアドレスの中にだけ入っています。スクリーンショットを撮るか、このページをブックマークして残してください。</p>
     <div class="actions">
       <button type="button" id="copy">物語をコピー</button>
       <span class="status" id="status" role="status"></span>
     </div>
-  </footer>
-
-  <section class="notice" id="notice" hidden>
-    <p id="noticeText"></p>
   </section>
 </main>
+
+<p class="small">こども将棋ものがたり</p>
 
 <script>
 (() => {
@@ -143,6 +191,7 @@ button:focus-visible { outline: 2px solid var(--kaya); outline-offset: 3px; }
 
   const showError = (message) => {
     $('title').textContent = '物語を表示できませんでした';
+    $('pill').hidden = true;
     $('noticeText').textContent = message;
     $('notice').hidden = false;
     $('story').hidden = true;
@@ -172,10 +221,11 @@ button:focus-visible { outline: 2px solid var(--kaya); outline-offset: 3px; }
       p.textContent = line;
       story.append(p);
     });
+    $('pill').hidden = false;
     story.hidden = false;
     $('foot').hidden = false;
     $('notice').hidden = true;
-    document.title = data.t + '｜盤上の物語';
+    document.title = data.t + '｜こども将棋ものがたり';
   };
 
   const load = async () => {
