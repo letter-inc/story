@@ -82,6 +82,7 @@ textarea { font-family: var(--font-text); font-size: 1rem; line-height: 1.8; min
   <section class="panel" aria-labelledby="step1">
     <p class="label" id="step1">1　アプリの結果を貼り付ける</p>
     <button type="button" class="primary" id="paste">コピーした結果を貼り付け</button>
+    <p class="warn" id="pasteMsg" role="status" hidden></p>
     <p class="hint" id="pasteHint">アプリで結果の文章をすべて選択してコピーしてから押してください。ボタンが使えないときは、下の本文欄を長押しして「ペースト」を選んでください。</p>
     <label class="field" for="title">
       <span>タイトル</span>
@@ -218,27 +219,49 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
     storyEl.value = '';
     showEmpty('結果を貼り付けると、<br>ここにQRコードが表示されます');
     showWarn('');
+    pasteMsg('');
     $('checkLink').href = '#';
   }
 
+  // 貼り付けに関する案内は、ボタンのすぐ下に出す
+  const pasteMsg = (msg) => {
+    $('pasteMsg').textContent = msg || '';
+    $('pasteMsg').hidden = !msg;
+  };
+
   $('paste').addEventListener('click', async () => {
+    // https で開いていない（ファイルから開いた等）と、ボタンでの貼り付けは使えない
+    if (!window.isSecureContext || !navigator.clipboard || !navigator.clipboard.readText) {
+      pasteMsg('この開き方ではボタンが使えません。Safariで https://letter-inc.github.io/story/make.html を開いてください。いまは本文欄を長押しして「ペースト」を選べば貼り付けられます。');
+      storyEl.focus();
+      return;
+    }
+    // iPadでは、ボタンの近くに小さな「ペースト」が出て、それをタップするまで待つ
+    pasteMsg('ボタンの近くに出た「ペースト」をタップしてください。');
     try {
       const text = await navigator.clipboard.readText();
-      if (!text || !text.trim()) { showWarn('コピーした文章が見つかりませんでした。アプリで結果をコピーしてから、もう一度押してください。'); return; }
+      if (!text || !text.trim()) { pasteMsg('コピーした文章が見つかりませんでした。アプリで結果をコピーしてから、もう一度押してください。'); return; }
+      pasteMsg('');
       fill(text);
     } catch (e) {
-      showWarn('貼り付けボタンが使えませんでした。本文欄を長押しして「ペースト」を選んでください。');
-      storyEl.focus();
+      pasteMsg('貼り付けが許可されませんでした。もう一度押して「ペースト」をタップするか、本文欄を長押しして「ペースト」を選んでください。');
     }
   });
 
   // 本文欄に直接ペーストした場合も、タイトルと本文に分ける（空欄のときだけ）
-  storyEl.addEventListener('paste', (e) => {
+  const onPaste = (e) => {
     if (storyEl.value.trim() || titleEl.value.trim()) return;
     const text = e.clipboardData && e.clipboardData.getData('text');
     if (!text) return;
     e.preventDefault();
+    pasteMsg('');
     fill(text);
+  };
+  storyEl.addEventListener('paste', onPaste);
+  // キーボード付きiPadなら、入力欄以外で ⌘V を押しても貼り付けられる
+  document.addEventListener('paste', (e) => {
+    if (e.target === storyEl || e.target === titleEl) return;
+    onPaste(e);
   });
 
   titleEl.addEventListener('input', schedule);
